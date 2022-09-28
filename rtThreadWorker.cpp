@@ -17,7 +17,7 @@ void RTThreadWorker::stop()
     m_isRunning = false;
 }
 
-void RTThreadWorker::addQueuedEvent(const std::function<void ()> &func)
+void RTThreadWorker::queueNewEvent(const std::function<void ()> &func)
 {
     std::unique_lock<std::mutex> lock(m_mutexEvent);
     m_eventQueue.push(func);

@@ -1,7 +1,6 @@
 #include "rtWorker.h"
 #include <QDebug>
 
-
 RTWorker::RTWorker()
 {
 
@@ -9,6 +8,6 @@ RTWorker::RTWorker()
 
 void RTWorker::startRTSlot(int num)
 {
-    ASSERT_RTSLOT_AFFINITY;
+    ASSERT_RTSLOT_AFFINITY
     qDebug()<<num;
 }

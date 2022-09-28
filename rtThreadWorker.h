@@ -30,7 +30,7 @@ public:
     RTThreadWorker();
     ~RTThreadWorker();
     void stop();
-    void addQueuedEvent(const std::function<void(void)>& func);
+    void queueNewEvent(const std::function<void(void)>& func);
 public:
     void moveToThread(QThread* thread);
 private slots:
@@ -49,7 +49,7 @@ template<typename ObjPtr, typename FuncPtr, class... Args>
 void RTThreadWorker::callQueued(ObjPtr objPtr, FuncPtr funcPtr, Args... args)
 {
     RTThreadWorker* workerPtr = objPtr;
-    workerPtr->addQueuedEvent(std::bind(funcPtr, objPtr, args...));
+    workerPtr->queueNewEvent(std::bind(funcPtr, objPtr, args...));
 }
 
 #endif
