@@ -3,7 +3,8 @@
 RTThreadWorker::RTThreadWorker()
 {
     m_isRunning = false;
-    threadAffinity = nullptr;
+    m_threadAffinity = nullptr;
+    m_timerInterval = 0.0;
 }
 
 RTThreadWorker::~RTThreadWorker()
@@ -32,12 +33,34 @@ void RTThreadWorker::moveToThread(QThread *thread)
 void RTThreadWorker::start()
 {
     m_isRunning = true;
-    threadAffinity = QThread::currentThread();
+    m_threadAffinity = QThread::currentThread();
+    m_timePointPrev = std::chrono::high_resolution_clock::now();
+
     auto isRunningSafe = [&]{std::unique_lock<std::mutex> lock(m_mutexRunnung); return m_isRunning;};
     while(isRunningSafe())
     {
         handleQueuedEvents();
+        if(std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - m_timePointPrev).count() > m_timerInterval)
+        {
+            m_timePointPrev = std::chrono::high_resolution_clock::now();
+            timerCallback();
+        }
     }
+}
+
+void RTThreadWorker::setTimerInterval(const double timeInSec)
+{
+    m_timerInterval = timeInSec;
+}
+
+void RTThreadWorker::assertRTSlotAffinity()
+{
+    if(m_threadAffinity != QThread::currentThread()) throw RTSlotDirectCallException();
+}
+
+void RTThreadWorker::assertRTSlotAffinity(const std::string &name)
+{
+    if(m_threadAffinity != QThread::currentThread()) throw RTSlotDirectCallException(name);
 }
 
 void RTThreadWorker::handleQueuedEvents()

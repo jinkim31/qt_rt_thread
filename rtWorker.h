@@ -8,6 +8,8 @@ class RTWorker : public RTThreadWorker
     Q_OBJECT
 public:
     RTWorker();
+private:
+    virtual void timerCallback() override;
 rtslots:
     void startRTSlot(int num);
 signals:

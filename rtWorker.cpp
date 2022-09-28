@@ -3,11 +3,16 @@
 
 RTWorker::RTWorker()
 {
+    setTimerInterval(0.1);
+}
 
+void RTWorker::timerCallback()
+{
+    qDebug()<<"timer";
 }
 
 void RTWorker::startRTSlot(int num)
 {
-    ASSERT_RTSLOT_AFFINITY
+    assertRTSlotAffinity();
     qDebug()<<num;
 }
