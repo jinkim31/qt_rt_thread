@@ -9,6 +9,11 @@ public:
     {
         setTimerInterval(0.1);
     }
+private:
+    virtual void timerCallback() override
+    {
+        qDebug()<<"timer";
+    };
 rtslots:
     void workerSlot(int num)
     {
@@ -18,11 +23,6 @@ rtslots:
     }
 signals:
     void workerSignal();
-private:
-    virtual void timerCallback() override
-    {
-        qDebug()<<"timer";
-    };
 };
 
 ```
