@@ -17,7 +17,7 @@ private:
 rtslots:
     void workerSlot(int num)
     {
-        ASSERT_RTSLOT_AFFINITY // throws exception when called directly
+        assertRTSlotAffinity(); // throws exception when called directly
         qDebug()<<num;
         emit workerSignal();
     }
