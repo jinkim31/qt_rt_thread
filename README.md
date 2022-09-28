@@ -5,7 +5,10 @@ class RTWorker : public RTThreadWorker
 {
     Q_OBJECT
 public:
-    RTWorker();
+    RTWorker()
+    {
+        setTimerInterval(0.1);
+    }
 rtslots:
     void workerSlot(int num)
     {
@@ -15,6 +18,11 @@ rtslots:
     }
 signals:
     void workerSignal();
+private:
+    virtual void timerCallback() override
+    {
+        qDebug()<<"timer";
+    };
 };
 
 ```
