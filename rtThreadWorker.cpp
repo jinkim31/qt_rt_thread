@@ -3,6 +3,7 @@
 RTThreadWorker::RTThreadWorker()
 {
     m_isRunning = false;
+    threadAffinity = nullptr;
 }
 
 RTThreadWorker::~RTThreadWorker()
@@ -22,10 +23,16 @@ void RTThreadWorker::addQueuedEvent(const std::function<void ()> &func)
     m_eventQueue.push(func);
 }
 
+void RTThreadWorker::moveToThread(QThread *thread)
+{
+    this->QObject::moveToThread(thread);
+    QMetaObject::invokeMethod(this, &RTThreadWorker::start);
+}
+
 void RTThreadWorker::start()
 {
     m_isRunning = true;
-
+    threadAffinity = QThread::currentThread();
     auto isRunningSafe = [&]{std::unique_lock<std::mutex> lock(m_mutexRunnung); return m_isRunning;};
     while(isRunningSafe())
     {

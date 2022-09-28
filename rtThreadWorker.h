@@ -8,19 +8,35 @@
 #include <functional>
 #include <mutex>
 #include <QDebug>
+#include <QThread>
+#include <stdexcept>
 
 #define rtslots public
+#define ASSERT_RTSLOT_AFFINITY if(threadAffinity != QThread::currentThread()) throw RTSlotDirectCallException();
+#define ASSERT_RTSLOT_AFFINITY_NAME(name) if(threadAffinity != QThread::currentThread()) throw RTSlotDirectCallException(name);
+
 class RTThreadWorker : public QObject
 {
 public:
+    class RTSlotDirectCallException : public std::runtime_error
+    {
+    public:
+        RTSlotDirectCallException() : runtime_error("RT slot was called directly. Call the slot with RTThreadWorker::callQueued() instead to ensure thread safety.\n") {};
+        explicit RTSlotDirectCallException(std::string slotName) : runtime_error("RT slot \"" + slotName + "\" was called directly. Call the function with RTThreadWorker::callQueued() to ensure thread safety.\n") {};
+    };
+
     template<typename ObjPtr, typename FuncPtr, class... Args>
     static void callQueued(ObjPtr objPtr, FuncPtr funcPtr, Args... args);
     RTThreadWorker();
     ~RTThreadWorker();
     void stop();
     void addQueuedEvent(const std::function<void(void)>& func);
-public slots:
-    void start();   // must be call through queued signal-slot. blocking loop will run in calling thread otherwise
+public:
+    void moveToThread(QThread* thread);
+private slots:
+    void start();
+protected:
+    QThread* threadAffinity;
 private:
     std::queue<std::function<void(void)>> m_eventQueue;
     std::mutex m_mutexRunnung;

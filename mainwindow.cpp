@@ -5,7 +5,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->setupUi(this);
     rtWorker.moveToThread(&thread);
     thread.start();
-    QMetaObject::invokeMethod(&rtWorker, &RTWorker::start);
 
     timer.setInterval(100);
     connect(&timer, &QTimer::timeout, this, &MainWindow::timerCallback);
