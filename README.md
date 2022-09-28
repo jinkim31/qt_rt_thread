@@ -9,8 +9,9 @@ public:
 rtslots:
     void workerSlot(int num)
     {
-      qDebug()<<num;
-      emit workerSignal();
+        ASSERT_RTSLOT_AFFINITY // throws exception when called directly
+        qDebug()<<num;
+        emit workerSignal();
     }
 signals:
     void workerSignal();
